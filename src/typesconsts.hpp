@@ -7,6 +7,32 @@
 #define MEM_SIZE 32768
 #define CHALLENGE_PATH "./challenge.bin"
 
+enum Instructions {
+    HALT,
+    SET,
+    PUSH,
+    POP,
+    EQ,
+    GT,
+    JMP,
+    JT,
+    JF,
+    ADD,
+    MULT,
+    MOD,
+    AND,
+    OR,
+    NOT,
+    RMEM,
+    WMEM,
+    CALL,
+    RET,
+    OUT,
+    IN,
+    NOOP
+};
+
+
 using Register = unsigned short int;
 using Address = Register;
 

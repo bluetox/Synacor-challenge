@@ -30,11 +30,11 @@ void VirtualMachine::start() {
   while (true) {
     Address instr = this->memory.read_next();
     switch (instr) {
-    case 0:
+    case Instructions::HALT:
       std::cout << "Stopping, opcode 0" << std::endl;
       return;
 
-    case 1: {
+    case Instructions::SET: {
       Address a = this->memory.read_next();
       if (!isRegister(a)) 
         throw std::runtime_error("Invalid register");
@@ -42,11 +42,11 @@ void VirtualMachine::start() {
       this->reg[a - REGISTER_BASE_START] = readToValue();
       break;
     }
-    case 2:
+    case Instructions::PUSH:
       this->stack.push(readToValue());
       break;
 
-    case 3: {
+    case Instructions::POP: {
       Address a = this->memory.read_next();
       if (!isRegister(a))
         throw std::runtime_error("Invalid register");
@@ -54,7 +54,7 @@ void VirtualMachine::start() {
       this->reg[a - REGISTER_BASE_START] = this->stack.pop();
       break;
     }
-    case 4: {
+    case Instructions::EQ: {
       Address a = this->memory.read_next();
       if (!isRegister(a))
         throw std::runtime_error("Invalid register");
@@ -66,7 +66,7 @@ void VirtualMachine::start() {
       }
       break;
     }
-    case 5: {
+    case Instructions::GT: {
       Address a = this->memory.read_next();
       if (!isRegister(a)) {
         throw std::runtime_error("Invalid register");
@@ -78,12 +78,12 @@ void VirtualMachine::start() {
       }
       break;
     }
-    case 6: {
+    case Instructions::JMP: {
       Address a = readToValue();
       this->memory.jump(a);
       break;
     }
-    case 7:
+    case Instructions::JT:
       instr = readToValue();
       if (instr != 0) {
         instr = readToValue();
@@ -92,7 +92,7 @@ void VirtualMachine::start() {
         readToValue();
       }
       break;
-    case 8:
+    case Instructions::JF:
       instr = readToValue();
       if (instr == 0) {
         instr = readToValue();
@@ -102,7 +102,7 @@ void VirtualMachine::start() {
       }
       break;
 
-    case 9: {
+    case Instructions::ADD: {
       Address a = this->memory.read_next();
       if (!isRegister(a)) {
         throw std::runtime_error("Invalid register");
@@ -110,7 +110,7 @@ void VirtualMachine::start() {
       this->reg[a - REGISTER_BASE_START] = (readToValue() + readToValue()) % 32768;
       break;
     }
-    case 10: {
+    case Instructions::MULT: {
       Address a = this->memory.read_next();
       if (!isRegister(a)) {
         throw std::runtime_error("Invalid register");
@@ -118,7 +118,7 @@ void VirtualMachine::start() {
       this->reg[a - REGISTER_BASE_START] = (readToValue() * readToValue()) % 32768;
       break;
     }
-    case 11: {
+    case Instructions::MOD: {
       Address a = this->memory.read_next();
       if (!isRegister(a)) {
         throw std::runtime_error("Invalid register");
@@ -126,7 +126,7 @@ void VirtualMachine::start() {
       this->reg[a - REGISTER_BASE_START] = (readToValue() % readToValue()) % 32768;
       break;
     }
-    case 12: {
+    case Instructions::AND: {
       Address a = this->memory.read_next();
       if (!isRegister(a)) {
         throw std::runtime_error("Invalid register");
@@ -134,7 +134,7 @@ void VirtualMachine::start() {
       this->reg[a - REGISTER_BASE_START] = readToValue() & readToValue();
       break;
     }
-    case 13: {
+    case Instructions::OR: {
       Address a = this->memory.read_next();
       if (!isRegister(a)) {
         throw std::runtime_error("Invalid register");
@@ -142,7 +142,7 @@ void VirtualMachine::start() {
       this->reg[a - REGISTER_BASE_START] = readToValue() | readToValue();
       break;
     }
-    case 14: {
+    case Instructions::NOT: {
       Address a = this->memory.read_next();
       if (!isRegister(a)) {
         throw std::runtime_error("Invalid register");
@@ -150,7 +150,7 @@ void VirtualMachine::start() {
       this->reg[a - REGISTER_BASE_START] = (~readToValue()) & 0x7FFF;
       break;
     }
-    case 15: {
+    case Instructions::RMEM: {
       Address a = this->memory.read_next();
       if (!isRegister(a)) {
         throw std::runtime_error("Invalid register");
@@ -159,27 +159,27 @@ void VirtualMachine::start() {
       this->reg[a - REGISTER_BASE_START] = this->memory.read_address(b);
       break;
     }
-    case 16: {
+    case Instructions::WMEM: {
       Address a = readToValue();
       Address b = readToValue();
       this->memory.write_address(a, b);
       break;
     }
-    case 17: {
+    case Instructions::CALL: {
       Address target = readToValue();
       this->stack.push(this->memory.instr_ptr());
       this->memory.jump(target);
       break;
     }
-    case 18: {
+    case Instructions::RET: {
       this->memory.jump(this->stack.pop());
       break;
     }
-    case 19:
+    case Instructions::OUT:
       instr = readToValue();
       std::cout << static_cast<char>(instr & 0xFF);
       break;
-    case 20: {
+    case Instructions::IN: {
       Address a = this->memory.read_next();
       if (this->input_pos >= this->input_buffer.size()) {
         std::getline(std::cin, this->input_buffer);
@@ -190,7 +190,7 @@ void VirtualMachine::start() {
       break;
     }
 
-    case 21:
+    case Instructions::NOOP:
       break;
 
     default:
