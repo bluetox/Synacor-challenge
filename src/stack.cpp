@@ -2,24 +2,23 @@
 #include "typesconsts.hpp"
 #include <stdexcept>
 
-Stack::Stack() { stack = new Address[STACK_SIZE]; }
+bool Stack::isempty() { return this->stack_pointer == 0; }
+
+Stack::Stack() { this->stack = new Address[STACK_SIZE]; }
 
 void Stack::push(Address v) {
-  if (stack_pointer >= STACK_SIZE) {
+  if (this->stack_pointer >= STACK_SIZE)
     throw std::runtime_error("stack overflow");
-  }
 
-  stack[stack_pointer++] = v;
+  this->stack[this->stack_pointer++] = v;
 }
 
 Address Stack::pop() {
-  if (stack_pointer == 0) {
+  if (this->stack_pointer == 0)
     throw std::runtime_error("stack underflow");
-  }
 
-  return stack[--stack_pointer];
+  return this->stack[--this->stack_pointer];
 }
 
-bool Stack::empty() { return stack_pointer == 0; }
 
-Stack::~Stack() { delete[] stack; }
+Stack::~Stack() { delete[] this->stack; }

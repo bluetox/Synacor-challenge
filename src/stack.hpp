@@ -4,13 +4,17 @@
 #include "typesconsts.hpp"
 
 class Stack {
+private:
     Address *stack;
     int stack_pointer = 0;
+
+private:
+    bool isempty();
+
 public:
     Stack();
     void push(Address v);
     Address pop();
-    bool empty();
     ~Stack();
 };
 #endif

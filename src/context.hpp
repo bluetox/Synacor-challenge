@@ -5,16 +5,17 @@
 
 class Context {
   Address *mem;
+  int context_size;
+  int instruction_ptr = 0;
 
 public:
-  int instr_ptr = 0;
   Context();
-  ~Context();
+  Register instr_ptr();
   Address read_address(Address addr);
-  void write_address(Address addr, Address value);
-
   Address read_next();
+  void write_address(Address addr, Address value);
   void jump(Address addr);
+    ~Context();
 };
 
 #endif

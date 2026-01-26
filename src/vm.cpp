@@ -12,33 +12,33 @@ bool isRegister(Register r) {
   }
 }
 
-Register VirtualMachine::readToValue() { return toValue(context.read_next()); }
+Register VirtualMachine::readToValue() { return toValue(this->context.read_next()); }
+
 Register VirtualMachine::toValue(Register r) {
   if (r >= REGISTER_BASE_START && r <= REGISTER_BASE_END)
-    return reg[r - REGISTER_BASE_START];
+    return this->reg[r - REGISTER_BASE_START];
   else if (r < REGISTER_BASE_START)
     return r;
-  else {
-    throw std::runtime_error("Invalid value");
-  }
+  else 
+    throw std::runtime_error("Tried to read a value of 16 bits");
 }
-VirtualMachine::VirtualMachine() : context{Context{}}, reg{}, stack{} {};
+
+VirtualMachine::VirtualMachine() : context{}, reg{}, stack{} {};
 
 void VirtualMachine::start() {
   std::cout << "Starting execution" << std::endl << std::endl;
-  Register r = 0;
   while (true) {
-    Address instr = context.read_next();
+    Address instr = this->context.read_next();
     switch (instr) {
     case 0:
       std::cout << "Stopping, opcode 0" << std::endl;
       return;
-      break;
+
     case 1: {
-      Address a = context.read_next();
-      if (!isRegister(a)) {
+      Address a = this->context.read_next();
+      if (!isRegister(a)) 
         throw std::runtime_error("Invalid register");
-      }
+      
       reg[a - REGISTER_BASE_START] = readToValue();
       break;
     }
@@ -47,18 +47,18 @@ void VirtualMachine::start() {
       break;
 
     case 3: {
-      Address a = context.read_next();
-      if (!isRegister(a)) {
+      Address a = this->context.read_next();
+      if (!isRegister(a))
         throw std::runtime_error("Invalid register");
-      }
+      
       reg[a - REGISTER_BASE_START] = stack.pop();
       break;
     }
     case 4: {
-      Address a = context.read_next();
-      if (!isRegister(a)) {
+      Address a = this->context.read_next();
+      if (!isRegister(a))
         throw std::runtime_error("Invalid register");
-      }
+  
       if (readToValue() == readToValue()) {
         reg[a - REGISTER_BASE_START] = 1;
       } else {
@@ -67,7 +67,7 @@ void VirtualMachine::start() {
       break;
     }
     case 5: {
-      Address a = context.read_next();
+      Address a = this->context.read_next();
       if (!isRegister(a)) {
         throw std::runtime_error("Invalid register");
       }
@@ -78,32 +78,32 @@ void VirtualMachine::start() {
       }
       break;
     }
-    case 6:
-      r = readToValue();
-      context.jump(r);
+    case 6: {
+      Address a = readToValue();
+      this->context.jump(a);
       break;
+    }
     case 7:
       instr = readToValue();
       if (instr != 0) {
         instr = readToValue();
-        context.jump(instr);
+        this->context.jump(instr);
       } else {
         readToValue();
       }
       break;
-
     case 8:
       instr = readToValue();
       if (instr == 0) {
         instr = readToValue();
-        context.jump(instr);
+        this->context.jump(instr);
       } else {
         readToValue();
       }
       break;
 
     case 9: {
-      Address a = context.read_next();
+      Address a = this->context.read_next();
       if (!isRegister(a)) {
         throw std::runtime_error("Invalid register");
       }
@@ -111,7 +111,7 @@ void VirtualMachine::start() {
       break;
     }
     case 10: {
-      Address a = context.read_next();
+      Address a = this->context.read_next();
       if (!isRegister(a)) {
         throw std::runtime_error("Invalid register");
       }
@@ -119,7 +119,7 @@ void VirtualMachine::start() {
       break;
     }
     case 11: {
-      Address a = context.read_next();
+      Address a = this->context.read_next();
       if (!isRegister(a)) {
         throw std::runtime_error("Invalid register");
       }
@@ -127,7 +127,7 @@ void VirtualMachine::start() {
       break;
     }
     case 12: {
-      Address a = context.read_next();
+      Address a = this->context.read_next();
       if (!isRegister(a)) {
         throw std::runtime_error("Invalid register");
       }
@@ -135,7 +135,7 @@ void VirtualMachine::start() {
       break;
     }
     case 13: {
-      Address a = context.read_next();
+      Address a = this->context.read_next();
       if (!isRegister(a)) {
         throw std::runtime_error("Invalid register");
       }
@@ -143,7 +143,7 @@ void VirtualMachine::start() {
       break;
     }
     case 14: {
-      Address a = context.read_next();
+      Address a = this->context.read_next();
       if (!isRegister(a)) {
         throw std::runtime_error("Invalid register");
       }
@@ -151,28 +151,28 @@ void VirtualMachine::start() {
       break;
     }
     case 15: {
-      Address a = context.read_next();
+      Address a = this->context.read_next();
       if (!isRegister(a)) {
         throw std::runtime_error("Invalid register");
       }
       Address b = readToValue();
-      reg[a - REGISTER_BASE_START] = context.read_address(b);
+      reg[a - REGISTER_BASE_START] = this->context.read_address(b);
       break;
     }
     case 16: {
       Address a = readToValue();
       Address b = readToValue();
-      context.write_address(a, b);
+      this->context.write_address(a, b);
       break;
     }
     case 17: {
       Address target = readToValue();
-      stack.push(context.instr_ptr);
-      context.jump(target);
+      stack.push(this->context.instr_ptr());
+      this->context.jump(target);
       break;
     }
     case 18: {
-      context.jump(stack.pop());
+      this->context.jump(stack.pop());
       break;
     }
     case 19:
@@ -180,7 +180,7 @@ void VirtualMachine::start() {
       std::cout << static_cast<char>(instr & 0xFF);
       break;
     case 20: {
-      Address a = context.read_next();
+      Address a = this->context.read_next();
       if (input_pos >= input_buffer.size()) {
         std::getline(std::cin, input_buffer);
         input_buffer += '\n';
