@@ -1,9 +1,9 @@
-#include "context.hpp"
+#include "memory.hpp"
 #include "typesconsts.hpp"
 #include <fstream>
 #include <iostream>
 
-Context::Context() {
+Memory::Memory() {
 
   this->mem = new Address[MEM_SIZE]{};
   this->instruction_ptr = 0;
@@ -26,33 +26,33 @@ Context::Context() {
   std::cout << "Memory initialized" << std::endl;
 }
 
-Address Context::instr_ptr() {
+Address Memory::instr_ptr() {
   return this->instruction_ptr;
 }
 
-Address Context::read_next() {
+Address Memory::read_next() {
   if (this->instruction_ptr >= this->context_size)
     throw std::runtime_error("Instruction pointer out of bounds");
   return this->mem[this->instruction_ptr++];
 }
 
-Address Context::read_address(Address addr) {
+Address Memory::read_address(Address addr) {
   if (addr >= MEM_SIZE) 
     throw std::runtime_error("Tried to read outside of memory");
   return this->mem[addr];
 }
 
-void Context::write_address(Address addr, Address value) {
+void Memory::write_address(Address addr, Address value) {
   if (addr >= MEM_SIZE)
     throw std::runtime_error("Tried to write outside of memory");
   this->mem[addr] = value;
 }
 
-void Context::jump(Address addr) {
+void Memory::jump(Address addr) {
   if (addr < MEM_SIZE) 
     this->instruction_ptr = addr;
    else 
     throw std::runtime_error("Jumped to invalid memory location, exiting....");
 }
 
-Context::~Context() { delete[] mem; }
+Memory::~Memory() { delete[] mem; }
