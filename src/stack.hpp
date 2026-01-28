@@ -7,14 +7,15 @@ class Stack {
 private:
     Address *stack;
     int stack_pointer = 0;
-
-private:
-    bool isempty();
+    int capacity;
+    void grow();
+    
 
 public:
     Stack();
     void push(Address v);
     Address pop();
+    bool isempty() const;
     ~Stack();
 };
 #endif
