@@ -10,6 +10,8 @@ class Memory {
 
 public:
   Memory();
+  Register get_context_size();
+  Address* get_mem_ptr();
   Register instr_ptr();
   Address read_address(Address addr);
   Address read_next();

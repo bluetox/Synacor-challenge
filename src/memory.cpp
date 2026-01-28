@@ -54,5 +54,11 @@ void Memory::jump(Address addr) {
    else 
     throw std::runtime_error("Jumped to invalid memory location, exiting....");
 }
+Address* Memory::get_mem_ptr() {
+  return mem;
+}
 
+Register Memory::get_context_size() {
+  return context_size;
+}
 Memory::~Memory() { delete[] mem; }
