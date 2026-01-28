@@ -191,6 +191,9 @@ void VirtualMachine::start() {
       break;
     case Instructions::IN: {
       Address a = this->memory.read_next();
+      if (!isRegister(a)) {
+        throw std::runtime_error("Invalid register");
+      }
       if (this->input_pos >= this->input_buffer.size()) {
         std::getline(std::cin, this->input_buffer);
         this->input_buffer += '\n';
