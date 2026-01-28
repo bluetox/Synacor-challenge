@@ -52,7 +52,7 @@ void disassemble(Address *mem, Register size) {
       std::cout << "DATA " << opcode;
       break;
     }
-    std::cout << "\n";
+    std::cout << std::endl;
   }
 }
 
